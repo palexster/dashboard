@@ -9,7 +9,7 @@ import LiqoDashMockResponse from '../__mocks__/liqodashtest.json';
 import { setup_resource } from './RTLUtils';
 import userEvent from '@testing-library/user-event';
 import LiqoDashUpdatedMockResponse from '../__mocks__/liqodashtest_update.json';
-import UpdateCR from '../src/editors/UpdateCR';
+import UpdateCR from '../src/editors/CRD/UpdateCR';
 import { testTimeout } from '../src/constants';
 import Cookies from 'js-cookie';
 

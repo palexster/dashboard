@@ -12,7 +12,7 @@ import PieMockResponse from '../__mocks__/piecharts.json';
 import Error409 from '../__mocks__/409.json'
 import userEvent from '@testing-library/user-event';
 import { setup_resource } from './RTLUtils';
-import DesignEditorCRD from '../src/editors/DesignEditorCRD';
+import DesignEditorCRD from '../src/editors/CRD/DesignEditorCRD';
 import { MemoryRouter } from 'react-router-dom';
 import { testTimeout } from '../src/constants';
 import Cookies from 'js-cookie';

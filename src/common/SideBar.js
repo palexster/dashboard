@@ -3,10 +3,10 @@ import { Link, withRouter } from 'react-router-dom';
 import { Layout, Menu } from 'antd';
 import DesktopOutlined from '@ant-design/icons/lib/icons/DesktopOutlined';
 import './SideBar.css';
-import DashboardOutlined from '@ant-design/icons/lib/icons/DashboardOutlined';
-import SettingOutlined from '@ant-design/icons/lib/icons/SettingOutlined';
-import LayoutOutlined from '@ant-design/icons/lib/icons/LayoutOutlined';
-import StarOutlined from '@ant-design/icons/lib/icons/StarOutlined';
+import {
+  ApiOutlined, DashboardOutlined, SettingOutlined,
+  LayoutOutlined, StarOutlined
+} from '@ant-design/icons'
 import AddCustomView from '../views/AddCustomView';
 
 const Sider = Layout.Sider;
@@ -14,18 +14,26 @@ const Sider = Layout.Sider;
 function SideBar() {
 
   const [CV, setCV] = useState([]);
-  const [favourites, setFavourites] = useState(window.api.CRDs.current.filter(item => {
+  const [favouritesCRD, setFavouritesCRD] = useState(window.api.CRDs.current.filter(item => {
     return item.metadata.annotations && item.metadata.annotations.favourite;
-  }))
-  const [collapsed, setCollapsed] = useState(false)
+  }));
+  const [favouritesResource, setFavouriteResource] = useState([]);
+  const [collapsed, setCollapsed] = useState(false);
 
   useEffect(() => {
     window.api.CVArrayCallback.current.push(getCustomViews);
+    window.api.DCArrayCallback.current.push(getFavouriteResources);
     window.api.sidebarCallback.current = getFavourite;
   }, [])
 
   const getFavourite = CRDs => {
-    setFavourites(CRDs);
+    setFavouritesCRD(CRDs);
+  }
+
+  const getFavouriteResources = () => {
+    setFavouriteResource([...window.api.dashConfigs.current.spec.resources.filter(resource => {
+      return resource.favourite;
+    })]);
   }
 
   const getCustomViews = () => {
@@ -38,6 +46,7 @@ function SideBar() {
 
   let cv = [];
   let fav = [];
+  let favR = [];
 
   /** If there are custom views, show them in the sider */
   if(CV.length !== 0) {
@@ -62,14 +71,36 @@ function SideBar() {
   }
 
   /** If there are favourite CRDs, show them in the sider */
-  if(favourites.length !== 0) {
-    favourites.forEach(item => {
+  if(favouritesCRD.length !== 0) {
+    favouritesCRD.forEach(item => {
       fav.push(
         <Menu.Item key={item.metadata.name} style={{ marginTop: 8}}>
           <Link to={{
             pathname: '/customresources/' +  item.metadata.name}}
           >
             <span>{item.spec.names.kind}</span>
+          </Link>
+        </Menu.Item>
+      )
+    });
+  }
+
+  const Icon = ({type, ...rest}) => {
+    const icons = require(`@ant-design/icons`);
+    const Component = icons[type];
+    return <Component {...rest} />;
+  }
+
+  /** If there are favourite Resources, show them in the sider */
+  if(favouritesResource.length !== 0) {
+    favouritesResource.forEach(item => {
+      favR.push(
+        <Menu.Item key={item.resourceName} style={{ marginTop: 8}}>
+          <Link to={{
+            pathname: item.resourcePath}}
+          >
+            <Icon type={'MessageOutlined'} style={{fontSize: '20px', color: '#08c'}} />
+            <span>{item.resourceName}</span>
           </Link>
         </Menu.Item>
       )
@@ -100,7 +131,7 @@ function SideBar() {
         </div>
         <Menu mode="inline" defaultOpenKeys={['sub_fav']}
               defaultSelectedKeys={'1'} style={{ marginTop: 16}}>
-          <Menu.Item key="1">
+          <Menu.Item key="home">
             <Link to="/">
               <DashboardOutlined style={{ fontSize: '20px' }} />
               <span>Home</span>
@@ -112,8 +143,23 @@ function SideBar() {
             <AddCustomView  />
           </Menu.Item>
           <Menu.Divider/>
-          <Menu.Item key="2" style={{ marginTop: 8}}>
-            <Link to="/customresources">
+          <Menu.Item key="apis">
+            <Link to="/apis">
+              <ApiOutlined style={{ fontSize: '20px' }} />
+              <span>Apis</span>
+            </Link>
+          </Menu.Item>
+          <Menu.Item key="api">
+            <Link to="/api/v1">
+              <ApiOutlined style={{ fontSize: '20px' }} />
+              <span>Api</span>
+            </Link>
+          </Menu.Item>
+          <Menu.Divider/>
+          {favR}
+          <Menu.Divider/>
+          <Menu.Item key="crd" style={{ marginTop: 8}}>
+            <Link to="/apis/apiextensions.k8s.io/v1/customresourcedefinitions">
               <DesktopOutlined style={{ fontSize: '20px' }} />
               <span>Custom Resources</span>
             </Link>
@@ -125,7 +171,7 @@ function SideBar() {
             {fav}
           </Menu.SubMenu>
           <Menu.Divider/>
-          <Menu.Item key="3" style={{ marginTop: 8}}>
+          <Menu.Item key="settings" style={{ marginTop: 8}}>
             <Link to="/settings">
               <SettingOutlined style={{ fontSize: '20px' }} />
               <span>Settings</span>

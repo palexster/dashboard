@@ -13,7 +13,7 @@ import PieMockResponse from '../__mocks__/piecharts.json';
 import NoAnnNoResNoSch from '../__mocks__/no_Ann_noRes_noSch.json';
 import ManyResources from '../__mocks__/manyResources.json';
 import ApiInterface from '../src/services/api/ApiInterface';
-import CRD from '../src/CRD/CRD';
+import CRD from '../src/resources/CRD/CRD';
 import { MemoryRouter } from 'react-router-dom';
 import Error401 from '../__mocks__/401.json';
 import Error409 from '../__mocks__/409.json';

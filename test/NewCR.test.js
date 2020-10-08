@@ -9,7 +9,7 @@ import LiqoDashNewMockResponse from '../__mocks__/liqodashtest_new.json';
 import NoAnnNoResNoSch from '../__mocks__/no_Ann_noRes_noSch.json';
 import userEvent from '@testing-library/user-event';
 import { setup_resource } from './RTLUtils';
-import NewCR from '../src/editors/NewCR';
+import NewCR from '../src/editors/CRD/NewCR';
 import { testTimeout } from '../src/constants';
 import Cookies from 'js-cookie';
 

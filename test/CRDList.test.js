@@ -9,7 +9,7 @@ import CRDmockEmpty from '../__mocks__/crd_empty.json';
 import ViewMockResponse from '../__mocks__/views.json';
 import ApiInterface from '../src/services/api/ApiInterface';
 import { MemoryRouter } from 'react-router-dom';
-import CRDList from '../src/CRD/CRDList';
+import CRDList from '../src/resources/CRD/CRDList';
 import { testTimeout } from '../src/constants';
 import Cookies from 'js-cookie';
 

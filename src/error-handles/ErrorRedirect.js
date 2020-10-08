@@ -2,9 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Result, Button } from 'antd';
 import './ErrorRedirect.css'
 import LogoutOutlined from '@ant-design/icons/lib/icons/LogoutOutlined';
+import { useHistory } from 'react-router-dom';
 
 export default function ErrorRedirect(props) {
   const [description, setDescription] = useState('');
+  let history = useHistory();
 
   useEffect(() => {
     let desc = '';
@@ -40,7 +42,15 @@ export default function ErrorRedirect(props) {
                       }}>
                 Logout
               </Button>
-            ) : null
+            ) : (
+            <Button className="go-back-btn"
+                    type="primary" size="large"
+                    icon={<LogoutOutlined />}
+                    onClick={() => history.go(-3)}
+            >
+              Go Back
+            </Button>
+          )
         }
       />
     </div>

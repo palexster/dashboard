@@ -10,7 +10,7 @@ import LiqoDashMockResponse from '../__mocks__/liqodashtest.json';
 import PieMockResponse from '../__mocks__/piecharts.json';
 import ApiInterface from '../src/services/api/ApiInterface';
 import { MemoryRouter } from 'react-router-dom';
-import CRD from '../src/CRD/CRD';
+import CRD from '../src/resources/CRD/CRD';
 import { testTimeout } from '../src/constants';
 
 fetchMock.enableMocks();

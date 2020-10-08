@@ -94,7 +94,7 @@ function ConfigView() {
   }
 
   return(
-    <div className="crds-container" style={{maxWidth: '60%'}}>
+    <div className="crds-container" style={{maxWidth: '80%'}}>
       <div className={'crd-content'}>
         <Layout style={{background: '#fff'}}>
           <Space align="center">

@@ -4,37 +4,36 @@ export default function Utils() {
   /**
    * Function that transform string in dot notation and get the params from an object
    * @param obj: from which the function get the item
-   * @param is: the string that gives the path
+   * @param param: the string that gives the path
    * @param value
    * @returns list of params retrieved from an object
    */
-  const index = (obj, is, value) => {
+  const index = (obj, param, value) => {
     try{
       if (Array.isArray(obj)) {
         obj.forEach(item => {
-          index(item, is);
+          index(item, param);
         });
       } else {
-        if (typeof is == 'string'){
-          return index(obj, is.split('.'), value);
+        if (typeof param == 'string'){
+          return index(obj, param.split('.'), value);
         }
-        else if (is.length === 1 && value !== undefined){
-          return obj[is[0]] = value;
+        else if (param.length === 1 && value !== undefined){
+          return obj[param[0]] = value;
         }
-        else if (is.length === 0){
+        else if (param.length === 0){
           result.push(obj);
           return obj;
         }
         else
-          return index(obj[is[0]], is.slice(1), value);
+          return index(obj[param[0]], param.slice(1), value);
       }
     } catch {
       return;
     }
 
-    let res = result;
-    result = [];
-    return res;
+    //console.log(result);
+    return result;
   }
 
   /**
@@ -90,7 +89,30 @@ export default function Utils() {
     } catch {}
   }
 
+  let objectSet = {};
+
+  const getSelectedProperties = (object, searchedKey, path) => {
+    try{
+      if(typeof object === 'object' && object !== null){
+        Object.keys(object).forEach(key => {
+          console.log(key);
+          let k = (path ? path + ' > ' : '') + key;
+          if(key === searchedKey){
+            objectSet = {
+              ...objectSet,
+              [k]: object[key]
+            };
+          }
+          getSelectedProperties(object[key], searchedKey, (path ? path + ' > ' : '') + key);
+        })
+      }
+    } catch {}
+
+    return objectSet;
+  }
+
   return{
+    getSelectedProperties,
     setRealProperties,
     OAPIV3toJSONSchema,
     index

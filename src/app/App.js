@@ -5,22 +5,28 @@ import {
   withRouter,
   Switch, Redirect
 } from 'react-router-dom';
-import CRDList from '../CRD/CRDList';
+import CRDList from '../resources/CRD/CRDList';
 import AppHeader from '../common/AppHeader';
 import SideBar from '../common/SideBar';
 import AppFooter from '../common/AppFooter';
 import { Layout, notification, message } from 'antd';
 import Home from '../home/Home';
 import CustomView from '../views/CustomView'
-import CRD from '../CRD/CRD';
+import CRD from '../resources/CRD/CRD';
 import Authenticator from '../services/api/Authenticator';
 import ErrorRedirect from '../error-handles/ErrorRedirect';
 import Login from '../login/Login';
-import { APP_NAME } from '../constants';
 import Cookies from 'js-cookie';
 import ConfigView from '../views/ConfigView';
 import LoadingIndicator from '../common/LoadingIndicator';
 import ApiInterface from '../services/api/ApiInterface';
+import Deploy from '../resources/deployment/Deploy';
+import Pod from '../resources/pod/Pod';
+import APIGroupList from '../resources/APIGroup/APIGroupList';
+import APIResourceList from '../resources/APIResourceList/APIResourceList';
+import ResourceList from '../resources/resourceList/ResourceList';
+import ResourceGeneral from '../resources/ResourceGeneral';
+import CustomViewGeneral from '../views/CustomViewGeneral';
 
 function CallBackHandler(props) {
   props.func();
@@ -94,11 +100,12 @@ function App(props) {
     /** Get the CRDs at the start of the app */
     _api.getCRDs().
     then(() => {
-      _api.loadCustomViewsCRs();
+      _api.loadDashboardCRs('View');
+      _api.loadDashboardCRs('DashboardConfig');
       window.api = _api;
       setApi(_api);
       message.success('Successfully logged in');
-      Cookies.set('token', token, {secure: true, sameSite: 'strict' })
+      Cookies.set('token', token/*, {secure: true, sameSite: 'strict' }*/)
     }).catch((error) => {console.log(error)});
   }
 
@@ -153,11 +160,6 @@ function App(props) {
              render={(props) =>
                <Home {...props} />
              }/>,
-      <Route key={'customresources'}
-             exact path="/customresources"
-             render={(props) =>
-               <CRDList {...props} />
-             }/>,
       <Route key={'crd'}
              exact path="/customresources/:crdName"
              render={(props) =>
@@ -166,17 +168,86 @@ function App(props) {
       <Route key={'customview'}
              exact path="/customview/:viewName/"
              render={(props) =>
-               <CustomView {...props} />
+               <CustomViewGeneral {...props} />
              }/>,
+      <Route key={'deployment'}
+             exact path="/deployments/:deployName"
+             render={(props) =>
+               <Deploy {...props} />
+             }/>,
+      <Route key={'api'}
+             exact path={'/apis'}
+             render={(props) =>
+               < APIGroupList {...props} />
+             }/>,
+      <Route key={'APIV1ResourceList'}
+             exact path={'/api/:version'}
+             render={(props) =>
+               < APIResourceList {...props} />
+             }/>,
+      <Route key={'APIResourceList'}
+             exact path={'/apis/:group/:version'}
+             render={(props) =>
+               < APIResourceList {...props} />
+             }/>,
+      <Route key={'ResourceListNamespaced'}
+             exact path={'/apis/:group/:version/namespaces/:namespace/:resource'}
+             render={(props) =>
+               < ResourceList {...props} />
+             }/>,
+      <Route key={'ResourceListNamespacedAPIV1'}
+             exact path={'/api/:version/namespaces/:namespace/:resource'}
+             render={(props) =>
+               < ResourceList {...props} />
+             }/>,
+      <Route key={'ResourceList'}
+             exact path={'/apis/:group/:version/:resource'}
+             render={(props) => {
+               /*if(props.match.params.resource === 'customresourcedefinitions')
+                 return <CRDList {...props} />
+               else*/
+                 return < ResourceList {...props} />
+             }}/>,
+      <Route key={'ResourceListAPIV1'}
+             exact path={'/api/:version/:resource'}
+             render={(props) =>
+               < ResourceList {...props} />
+             }/>,
+      <Route key={'Resource'}
+             exact path={'/apis/:group/:version/:resource/:resourceName'}
+             render={(props) =>
+               < ResourceGeneral {...props} />
+             }/>,
+      <Route key={'ResourceAPIV1'}
+             exact path={'/api/:version/:resource/:resourceName'}
+             render={(props) =>
+               < ResourceGeneral {...props} />
+             }/>,
+      <Route key={'ResourceNamespaced'}
+             exact path={'/apis/:group/:version/namespaces/:namespace/:resource/:resourceName'}
+             render={(props) => {
+               if (props.match.params.resource === 'deployments')
+                 return <Deploy {...props} />
+               else
+                 return < ResourceGeneral {...props} />
+             }}/>,
+      <Route key={'ResourceNamespacedAPIV1'}
+             exact path={'/api/:version/namespaces/:namespace/:resource/:resourceName'}
+             render={(props) => {
+               if (props.match.params.resource === 'pods')
+                 return <Pod {...props} />
+               else
+                 return < ResourceGeneral {...props} />
+             }}/>,
       <Route key={'settings'}
              exact path="/settings"
              render={(props) =>
                <ConfigView {...props} />
              }/>,
-    <Route key={'other'}
-           component={() =>
-             <ErrorRedirect match={{params: {statusCode: '404'}}} tokenLogout={tokenLogout} />
-           }/>
+      <Route key={'other'}
+             component={() =>
+               <ErrorRedirect match={{params: {statusCode: '404'}}} tokenLogout={tokenLogout} />
+             }/>
     )
   } else {
     routes.push(

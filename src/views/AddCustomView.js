@@ -3,7 +3,6 @@ import React, { useRef, useState } from 'react';
 import PlusSquareOutlined from '@ant-design/icons/lib/icons/PlusSquareOutlined';
 import PlusSquareTwoTone from '@ant-design/icons/lib/icons/PlusSquareTwoTone';
 import { dashLowercase } from '../services/stringUtils';
-import { APP_NAME } from '../constants';
 
 function AddCustomView(props){
   const [showAddCV, setShowAddCV] = useState(false);

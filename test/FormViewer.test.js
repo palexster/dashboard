@@ -4,7 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import fetchMock from 'jest-fetch-mock';
 import ApiInterface from '../src/services/api/ApiInterface';
 import userEvent from '@testing-library/user-event';
-import CR from '../src/CRD/CR';
+import CR from '../src/resources/CRD/CR';
 import CRDmockResponse from '../__mocks__/crd_fetch.json';
 import { MemoryRouter } from 'react-router-dom';
 import AdvMockResponse from '../__mocks__/advertisement.json';

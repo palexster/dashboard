@@ -1,11 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Empty, Rate, Typography, Table } from 'antd';
-import LoadingIndicator from '../common/LoadingIndicator';
+import React, { useEffect, useState } from 'react';
+import { Rate, Typography, Table } from 'antd';
 import { Link, withRouter } from 'react-router-dom';
 import './CRDList.css';
 import './CRD.css';
-import 'react-resizable/css/styles.css';
-import { getColumnSearchProps } from '../services/TableUtils';
+import { getColumnSearchProps } from '../../services/TableUtils';
+import { calculateAge } from '../../services/TimeUtils';
+import ListHeader from '../resourceList/ListHeader';
 
 function CRDList() {
   /**
@@ -80,7 +80,8 @@ function CRDList() {
       Kind: CRD.spec.names.kind,
       Favourite: favourite,
       Group: CRD.spec.group,
-      Description: description
+      Description: description,
+      Age: calculateAge(CRD.metadata.creationTimestamp)
     });
   });
 
@@ -96,15 +97,11 @@ function CRDList() {
       },
       ellipsis: true,
       render: (text, record) => (
-        <>
-          {
-            <Rate className="crd-fav" count={1} defaultValue={text === 1 ? 1 : 0}
-                  value={text === 1 ? 1 : 0}
-                  onChange={async () => {await handleClick_fav(record.key)}}
-                  style={{marginLeft: 0}}
-            />
-          }
-        </>
+        <Rate className="crd-fav" count={1} defaultValue={text === 1 ? 1 : 0}
+              value={text === 1 ? 1 : 0}
+              onChange={async () => {await handleClick_fav(record.key)}}
+              style={{marginLeft: 0, marginTop: -16}}
+        />
       )
     },
     {
@@ -124,25 +121,26 @@ function CRDList() {
       key: 'Group',
       fixed: true,
       ...getColumnSearchProps('Group', renderCRDs)
+    },
+    {
+      dataIndex: 'Age',
+      key: 'Age',
+      title: 'Age',
+      fixed: 'right',
+      width: '5em'
     }
   ]
 
   return (
     <div>
-      {!loading && CRDViews.length > 0 ? (
-        <Table columns={columns} dataSource={CRDViews}
-               pagination={{ position: ['bottomCenter'],
-                 hideOnSinglePage: window.api.CRDs.current.length < 11,
-                 showSizeChanger: true,
-               }} showSorterTooltip={false}
-        />
-      ) : null}
-      {!loading && CRDViews.length === 0 ? (
-        <div className="no-crds-found">
-          <Empty description={<strong>No CRDs found</strong>}/>
-        </div>
-      ) : null}
-      {loading ? <LoadingIndicator /> : null}
+      <ListHeader kind={'Custom Resource Definitions'} />
+      <Table columns={columns} dataSource={CRDViews}
+             pagination={{ position: ['bottomCenter'],
+               hideOnSinglePage: window.api.CRDs.current.length < 11,
+               showSizeChanger: true,
+             }} showSorterTooltip={false}
+             loading={loading}
+      />
     </div>
   );
 }
