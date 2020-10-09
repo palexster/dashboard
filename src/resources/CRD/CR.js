@@ -14,7 +14,7 @@ import HistoChart from '../../templates/histogram/HistoChart';
 import DeleteOutlined from '@ant-design/icons/lib/icons/DeleteOutlined';
 import UpdateCR from '../../editors/CRD/UpdateCR';
 import { withRouter } from 'react-router-dom';
-import ResourceForm from '../ResourceForm';
+import ResourceForm from '../resource/ResourceForm';
 
 function CR(props) {
 

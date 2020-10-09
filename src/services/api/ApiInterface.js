@@ -73,7 +73,7 @@ export default function ApiInterface(_user, props) {
           'apiextensions.k8s.io',
           undefined,
           'v1beta1',
-          'customresourcedefinitions',
+          'customresourcedefinitions/',
           undefined,
           CRDsNotifyEvent);
       }).catch(error => handleError(error));
@@ -293,7 +293,7 @@ export default function ApiInterface(_user, props) {
           /**
            * If it's the views watcher that stopped, we need to do an extra step
            */
-          if(watch.plural === 'views/' || watch.plural === 'customresourcedefinitions'){
+          if(watch.plural === 'views/' || watch.plural === 'customresourcedefinitions/'){
             watches.current = watches.current.filter(item => {return item.plural !== watch.plural});
           }
           watchResource(
@@ -313,7 +313,7 @@ export default function ApiInterface(_user, props) {
 
   const abortWatch = watch => {
     /** These watch need to always be up and restarted if aborted */
-    if(watch === 'views/' || watch === 'customresourcedefinitions') return true;
+    if(watch === 'views/' || watch === 'customresourcedefinitions/') return true;
 
     let w = watches.current.find(item => {return item.plural === watch});
     if(w){
@@ -509,7 +509,8 @@ export default function ApiInterface(_user, props) {
   /**
    * Function called to retrieve all deployments in a namespace
    *
-   * @param namespace is the namespace of the resource
+   * @param _namespace is the namespace of the resource
+   * @param fieldSelector
    * @returns a list of the deployments
    */
   const getDeployments = (_namespace, fieldSelector) => {
@@ -579,17 +580,7 @@ export default function ApiInterface(_user, props) {
   const getPodLogs = partialPath => {
     let path = window.APISERVER_URL + partialPath + '/log';
 
-    //console.log(path);
-
-    function cb(){
-      console.log('yogurt!!!!')
-    }
-
-    function done(){
-      console.log('done!!!!')
-    }
-
-    return apiManager.current.logFunction(path, cb, done).
+    return apiManager.current.logFunction(path).
       catch(error => console.log(error))
   }
 

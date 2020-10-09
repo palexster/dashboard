@@ -1,11 +1,11 @@
 import { Alert, Card, Tabs } from 'antd';
 import React, { useEffect, useState } from 'react';
-import ResourceHeader from '../ResourceHeader';
+import ResourceHeader from '../resource/ResourceHeader';
 import LoadingIndicator from '../../common/LoadingIndicator';
 import Editor from '../../editors/Editor';
-import ResourceForm from '../ResourceForm';
+import ResourceForm from '../resource/ResourceForm';
 import { getPodStatus } from './PodUtils';
-import { resourceNotifyEvent } from '../ResourceUtils';
+import { resourceNotifyEvent } from '../resource/ResourceUtils';
 
 function Pod(props){
   const [loading, setLoading] = useState(true);

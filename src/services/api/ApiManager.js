@@ -299,7 +299,7 @@ export default function ApiManager(user) {
     });
   }
 
-  const logFunction = (path, callback, done, signal) => {
+  const logFunction = (path) => {
     let headers = new Headers();
     headers.append("Authorization", "Bearer " + user.id_token);
 

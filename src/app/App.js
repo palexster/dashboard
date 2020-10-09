@@ -25,7 +25,7 @@ import Pod from '../resources/pod/Pod';
 import APIGroupList from '../resources/APIGroup/APIGroupList';
 import APIResourceList from '../resources/APIResourceList/APIResourceList';
 import ResourceList from '../resources/resourceList/ResourceList';
-import ResourceGeneral from '../resources/ResourceGeneral';
+import ResourceGeneral from '../resources/resource/ResourceGeneral';
 import CustomViewGeneral from '../views/CustomViewGeneral';
 
 function CallBackHandler(props) {

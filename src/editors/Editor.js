@@ -50,7 +50,7 @@ export default function Editor(props){
         highlightActiveLine
         showLineNumbers
         tabSize={2}
-        height={'75vh'}
+        height={'64vh'}
         width={'auto'}
         setOptions={{
           useWorker: false
@@ -58,7 +58,7 @@ export default function Editor(props){
       />
       {props.onClick ? (
         <div style={{marginTop: 20}}>
-          <Button onClick={onClick} style={{width: "20%"}}>OK</Button>
+          <Button type={'primary'} onClick={onClick} style={{width: "20%"}}>Save</Button>
         </div>
       ) : null}
     </div>

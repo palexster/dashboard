@@ -99,7 +99,7 @@ function SideBar() {
           <Link to={{
             pathname: item.resourcePath}}
           >
-            <Icon type={'MessageOutlined'} style={{fontSize: '20px', color: '#08c'}} />
+            <Icon type={item.icon ? item.icon : 'ApiOutlined'} style={{fontSize: '20px'}} />
             <span>{item.resourceName}</span>
           </Link>
         </Menu.Item>
@@ -158,12 +158,6 @@ function SideBar() {
           <Menu.Divider/>
           {favR}
           <Menu.Divider/>
-          <Menu.Item key="crd" style={{ marginTop: 8}}>
-            <Link to="/apis/apiextensions.k8s.io/v1/customresourcedefinitions">
-              <DesktopOutlined style={{ fontSize: '20px' }} />
-              <span>Custom Resources</span>
-            </Link>
-          </Menu.Item>
           <Menu.SubMenu key={"sub_fav"}
                         icon={<StarOutlined style={{ fontSize: '20px' }} />}
                         title={'Favourites'}

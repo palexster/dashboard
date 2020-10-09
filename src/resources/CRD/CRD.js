@@ -19,8 +19,8 @@ import PushpinOutlined from '@ant-design/icons/lib/icons/PushpinOutlined';
 import NewCR from '../../editors/CRD/NewCR';
 import DesignEditorCRD from '../../editors/CRD/DesignEditorCRD';
 import Editor from '../../editors/Editor';
-import CustomViewButton from '../buttons/CustomViewButton';
-import { resourceNotifyEvent } from '../ResourceUtils';
+import CustomViewButton from '../common/buttons/CustomViewButton';
+import { resourceNotifyEvent } from '../resource/ResourceUtils';
 
 function CRD(props) {
 

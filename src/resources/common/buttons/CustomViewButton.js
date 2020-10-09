@@ -1,5 +1,5 @@
 import { Dropdown, Menu, message, Tooltip } from 'antd';
-import AddCustomView from '../../views/AddCustomView';
+import AddCustomView from '../../../views/AddCustomView';
 import React, { useEffect, useState } from 'react';
 import LayoutOutlined from '@ant-design/icons/lib/icons/LayoutOutlined';
 

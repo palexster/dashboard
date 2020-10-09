@@ -4,11 +4,12 @@ import { withRouter, useLocation, useHistory, useParams } from 'react-router-dom
 import { getColumnSearchProps } from '../../services/TableUtils';
 import ListHeader from './ListHeader';
 import { calculateAge } from '../../services/TimeUtils';
-import { createNewConfig } from '../DashboardConfigUtils';
-import KubernetesSchemaAutocomplete from './KubernetesSchemaAutocomplete';
+import { createNewConfig, getResourceConfig, updateResourceConfig } from '../DashboardConfigUtils';
+import KubernetesSchemaAutocomplete from '../common/KubernetesSchemaAutocomplete';
 import { renderResourceList } from './ResourceListRenderer';
 import { columnContentFunction } from './columnContentFunction';
-import { resourceNotifyEvent } from '../ResourceUtils';
+import { resourceNotifyEvent } from '../resource/ResourceUtils';
+import FavouriteButton from '../common/buttons/FavouriteButton';
 
 function ResourceList(props) {
   /**
@@ -31,7 +32,7 @@ function ResourceList(props) {
 
     loadResourceList();
     getDashConfig();
-    if(props.match.params.namespace) window.api.setNamespace(props.match.params.namespace);
+    if(params.namespace) window.api.setNamespace(params.namespace);
     window.api.DCArrayCallback.current.push(getDashConfig);
     window.api.NSArrayCallback.current.push(changeNamespace);
 
@@ -62,7 +63,6 @@ function ResourceList(props) {
   }, [location]);
 
   const notifyEvent = (type, object) => {
-    console.log(type, object)
     resourceNotifyEvent(loadResourceList, type, object)
   }
 
@@ -85,10 +85,8 @@ function ResourceList(props) {
           compare: (a, b) => a.Favourite - b.Favourite,
         },
         render: (text, record) => (
-          <Rate className="crd-fav" count={1} defaultValue={text === 1 ? 1 : 0}
-                value={text === 1 ? 1 : 0}
-                onChange={() => console.log('You pressed the favourite button on ' + record.Name)}
-                style={{marginLeft: 0, marginTop: -16}}
+          <FavouriteButton favourite={text} resourceList={resourceList}
+                           resourceName={record.Name}
           />
         )
       }
@@ -169,16 +167,20 @@ function ResourceList(props) {
 
     const resourceViews = [];
     resourceList.forEach(resource => {
+      let favourite = 0;
+      if(resource.metadata.annotations){
+        if(resource.metadata.annotations.favourite)
+          favourite = 1;
+      }
       let object = {
         key: resource.metadata.name + '_' + resource.metadata.namespace,
-        Favourite: false,
+        Favourite: favourite,
         Age: calculateAge(resource.metadata.creationTimestamp)
       }
 
       if(!_.isEmpty(resourceConfig) && resourceConfig.render && resourceConfig.render.columns) {
         resourceConfig.render.columns.forEach(column => {
           object[column.columnName] = columnContentFunction(resource, column.parameter);
-          //console.log(object[column.columnName]);
         })
       } else {
         object['Name'] = resource.metadata.name;
@@ -188,7 +190,7 @@ function ResourceList(props) {
       resourceViews.push(object);
     });
 
-    setColumnsContents(resourceViews);
+    setColumnsContents([...resourceViews]);
   }
 
   const addColumnHeader = (setNew) => {
@@ -220,20 +222,10 @@ function ResourceList(props) {
 
     if(value === '') return;
 
-    let CRD = window.api.getCRDFromKind('DashboardConfig');
     let tempResourceConfig = resourceConfig;
 
     if(!_.isEmpty(tempResourceConfig)){
 
-      let path = '/' + window.location.pathname.split('/')[1] + '/' +
-        (params.group ? params.group + '/' : '') +
-        params.version + '/' +
-        params.resource;
-
-      /** The resource has a config, update it */
-      window.api.dashConfigs.current.spec.resources = window.api.dashConfigs.current.spec.resources.filter(resource =>
-        resource.resourcePath !== path
-      )
       if(!tempResourceConfig.render) tempResourceConfig.render = {};
       if(!tempResourceConfig.render.columns) tempResourceConfig.render.columns = [];
 
@@ -268,48 +260,23 @@ function ResourceList(props) {
       })
     }
 
-    window.api.dashConfigs.current.spec.resources.push(tempResourceConfig);
-
-    window.api.updateCustomResource(
-      CRD.spec.group,
-      CRD.spec.version,
-      undefined,
-      CRD.spec.names.plural,
-      window.api.dashConfigs.current.metadata.name,
-      window.api.dashConfigs.current
-    ).then(res => {
-      console.log(res);
-    }).catch(error => console.log(error))
+    updateResourceConfig(tempResourceConfig, params);
   }
 
   const getDashConfig = () => {
     if(window.api.dashConfigs.current){
       setResourceConfig(() => {
-        let conf = window.api.dashConfigs.current.spec.resources.find(resource => {
-          return resource.resourcePath === window.location.pathname;
-        })
-
-        if(!conf){
-          let path = '/' + window.location.pathname.split('/')[1] + '/' +
-            (params.group ? params.group + '/' : '') +
-            params.version + '/' +
-            params.resource;
-          conf = window.api.dashConfigs.current.spec.resources.find(resource => {
-            return resource.resourcePath === path;
-          })
-        }
-
-        return conf;
+        return getResourceConfig(params);
       });
     }
   }
 
   const changeNamespace = () => {
     let path = '/' + window.location.pathname.split('/')[1] + '/' +
-      (props.match.params.group ? props.match.params.group + '/' : '') +
-      props.match.params.version + '/' +
+      (params.group ? params.group + '/' : '') +
+      params.version + '/' +
       (window.api.namespace.current ? 'namespaces/' + window.api.namespace.current + '/' : '') +
-      props.match.params.resource;
+      params.resource;
 
     history.push(path);
   }

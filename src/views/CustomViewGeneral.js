@@ -6,7 +6,7 @@ import 'react-resizable/css/styles.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import { onDrag, onResize, resizeDetector } from './CustomViewUtils';
 import { Alert } from 'antd';
-import ResourceGeneral from '../resources/ResourceGeneral';
+import ResourceGeneral from '../resources/resource/ResourceGeneral';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 

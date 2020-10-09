@@ -6,7 +6,7 @@ export function columnContentFunction(resource, content){
 
   let parameters = content.split('%//');
 
-  console.log(parameters)
+  //console.log(parameters)
 
   if(parameters.length > 1){
     //console.log(parameters);
