@@ -26,6 +26,7 @@ const CustomInputNumber = function(props){
                  max={props.schema.maximum ? props.schema.maximum : Number.MAX_SAFE_INTEGER}
                  defaultValue={props.value}
                  value={props.value}
+                 size={'small'}
                  onChange={(value) => {if(!props.readonly) props.onChange(value)}}
     />
   )
@@ -57,6 +58,7 @@ const CustomText = function(props) {
                 max={100}
                 value={typeof props.value === 'number' ? props.value : 0}
                 onChange={(value) => {if(!props.readonly) props.onChange(value)}}
+                size={'small'}
               />
             </Col>
           </Row>
@@ -69,8 +71,13 @@ const CustomText = function(props) {
     return CustomInputNumber(props);
   }
   return (
-    <Input id={props.id} defaultValue={props.value} value={props.value} disabled={props.disabled} role={'textbox'}
-           onChange={({ target }) => {if(!props.readonly) props.onChange(target.value)}}/>
+    <Input id={props.id} defaultValue={props.disabled ? '' : props.value}
+           value={props.disabled ? '' : props.value}
+           disabled={props.disabled} role={'textbox'}
+           onChange={({ target }) => {if(!props.readonly) props.onChange(target.value)}}
+           bordered={!props.disabled} size={'small'}
+           suffix={props.disabled ? props.value : ''}
+    />
   )
 }
 

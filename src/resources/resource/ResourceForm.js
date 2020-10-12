@@ -65,12 +65,16 @@ export default function ResourceForm(props){
     let utils = Utils();
     let object = utils.getSelectedProperties(props.resource[currentTab], value.target.value);
 
+    console.log(object)
+
     if(_.isEmpty(object))
       object = props.resource[currentTab];
 
     let searchedRes = {
       [currentTab]: object
     }
+
+    console.log(searchedRes, currentTab)
 
     setContentList(prev => {
       prev[currentTab] = (

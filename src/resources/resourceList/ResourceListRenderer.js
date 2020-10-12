@@ -6,10 +6,12 @@ import { useParams } from 'react-router-dom';
 
 export const renderResourceList = (text, record, dataIndex, resourceList) => {
   let params = useParams();
-
   let resource = resourceList.find(item => {return item.metadata.name === record.Name});
 
   if(Array.isArray(text)){
+    if(text.length === 0)
+      return 'None';
+
     let items = [];
 
     if(typeof text[0] === 'object'){
@@ -42,7 +44,9 @@ export const renderResourceList = (text, record, dataIndex, resourceList) => {
         <ExclamationCircleTwoTone twoToneColor="#f5222d" />
     )
   } else if(typeof text === 'object'){
-    console.log(text)
+    if(text === '' || !text)
+      return 'None';
+
     let items = [];
 
     for (let key in text) {
@@ -69,6 +73,9 @@ export const renderResourceList = (text, record, dataIndex, resourceList) => {
       <div>{items}</div>
     )
   }
+
+  if(text === '' || !text)
+    return 'None';
 
   return (
     dataIndex === 'Name' ? (

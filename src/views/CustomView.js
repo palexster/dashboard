@@ -7,6 +7,7 @@ import 'react-resizable/css/styles.css';
 import { Responsive, WidthProvider } from 'react-grid-layout';
 import { onDrag, onResize, resizeDetector } from './CustomViewUtils';
 import { Alert } from 'antd';
+import { pruneLayouts } from '../resources/common/LayoutUtils';
 
 const ResponsiveGridLayout = WidthProvider(Responsive);
 
@@ -73,27 +74,10 @@ function CustomView(props) {
     }
   }, [layout])
 
-  const pruneLayout = l => {
-    Object.keys(l).forEach(br => {
-      l[br].forEach(item => {
-        delete item.isDraggable;
-        delete item.moved;
-        delete item.static;
-        delete item.isBounded;
-        delete item.isResizable;
-        delete item.maxH;
-        delete item.maxW;
-        delete item.minH;
-        delete item.minW;
-      })
-    })
-    return l;
-  }
-
   const updateCRD = (CV, load) => {
     let changeLayout = load;
     if(!load && CV.spec.layout &&
-      !_.isEqual(pruneLayout(customView.current.spec.layout), CV.spec.layout))
+      !_.isEqual(pruneLayouts(customView.current.spec.layout), CV.spec.layout))
       changeLayout = true
 
     if(changeLayout) {

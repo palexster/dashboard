@@ -18,7 +18,6 @@ export default function KubernetesSchemaAutocomplete(props){
   }, [props.kind]);
 
   const getSchema = () => {
-    console.log(props)
     window.api.getKubernetesJSONSchema()
       .then(r => {
         let res = 'io.k8s.api.' +
@@ -55,7 +54,6 @@ export default function KubernetesSchemaAutocomplete(props){
         ){
           fillItems(obj[key], path, counter + 1);
         } else if(key === '$ref' && typeof obj[key] === 'string'){
-          //console.log(obj[key]);
           getReferencedSchema(obj[key], path, counter + 1)
         } else {
           tot = [...tot, {
@@ -72,7 +70,6 @@ export default function KubernetesSchemaAutocomplete(props){
     }
 
     if(path === '') {
-      console.log(tot);
       setTotItems(tot);
     }
   }
@@ -87,9 +84,8 @@ export default function KubernetesSchemaAutocomplete(props){
       columnValue = columnValue + value + '%//';
     } else {
       columnValue = columnValue + 'param.' + option.value + '%//';
-      /*console.log(2, columnValue, option.value);
+      /*
       setTotItems(prev => prev.filter(item => item.value !== (value + '.')));
-      console.log(value.split('.').slice(0, -1).join('').replaceAll('.', '/'))
       setTotItems(prev => [...prev, {
         value: option.value + '.' + '#',
         label: value.split('.').slice(0, -1).join('').replaceAll('.', '/'),
@@ -111,13 +107,10 @@ export default function KubernetesSchemaAutocomplete(props){
   }
 
   function onComplete() {
-    console.log('yoo', columnValue.slice(0, -3), splitCamelCaseAndUp(columnValue.split('.').splice(-1)[0].slice(0, -3)));
-
     props.updateFunc(columnValue.slice(0, -3), splitCamelCaseAndUp(columnValue.split('.').splice(-1)[0].slice(0, -3)));
   }
 
   const onSubmit = item => {
-    console.log(item);
     item = item + '%//';
     columnValue = item;
     onComplete();

@@ -79,17 +79,17 @@ function FormViewer(props) {
   }
 
   return(
-    <div>
+    <div key={props.show}>
       <Form
         uiSchema = {{ "ui:disabled": true }}
         schema={schema}
         formData={formData}
         onChange={() => {
-          if(!showButton && ((props.show !== 'status' || props.show !== 'metadata') && !props.onEditor))
+          if(!showButton && ((props.show !== 'status' || props.show !== 'metadata' || props.readonly) && !props.onEditor))
             setShowButton(true);
         }}
-        fields={((props.show === 'status' || props.show === 'metadata') || props.onEditor) ? fields : fieldsView}
-        FieldTemplate={((props.show === 'status' || props.show === 'metadata') ||props.onEditor) ? CustomFieldTemplate : CustomFieldTemplateViewer}
+        fields={((props.show === 'status' || props.show === 'metadata' || props.readonly) || props.onEditor) ? fields : fieldsView}
+        FieldTemplate={((props.show === 'status' || props.show === 'metadata' || props.readonly) || props.onEditor) ? CustomFieldTemplate : CustomFieldTemplateViewer}
         ArrayFieldTemplate={CustomArrayFieldTemplate}
         widgets={widgets}
         onSubmit={submit}

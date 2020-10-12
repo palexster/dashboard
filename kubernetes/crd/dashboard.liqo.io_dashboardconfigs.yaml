@@ -45,6 +45,9 @@ spec:
                     resourceName:
                       description: ""
                       type: string
+                    icon:
+                      description: ""
+                      type: string  
                     render:
                       description: ""
                       type: object
@@ -58,9 +61,52 @@ spec:
                               columnName:
                                 description: ""
                                 type: string
-                              parameter:
+                              columnContent:
                                 description: ""
                                 type: string
+                        tabs:
+                          description: ""
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              tabName:
+                                description: ""
+                                type: string
+                              tabContent:
+                                description: ""
+                                type: array
+                                items:
+                                  type: object
+                                  properties:
+                                    cardTitle:
+                                      description: ""
+                                      type: string
+                                    cardLayout:
+                                      description: ""
+                                      type: object
+                                      properties:
+                                        h:
+                                          description: ""
+                                          type: integer
+                                        w:
+                                          description: ""
+                                          type: integer
+                                        x:
+                                          description: ""
+                                          type: integer
+                                        "y":
+                                          description: ""
+                                          type: integer
+                                    cardContent:
+                                      description: ""
+                                      type: array
+                                      items:
+                                        type: object
+                                        properties:
+                                          parameter:
+                                            description: ""
+                                            type: string
         type: object                      
     served: true
     storage: true

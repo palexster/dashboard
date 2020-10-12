@@ -13,10 +13,8 @@ import ExclamationCircleOutlined from '@ant-design/icons/lib/icons/ExclamationCi
 import DeleteOutlined from '@ant-design/icons/lib/icons/DeleteOutlined';
 import ResourceBreadcrumb from '../common/ResourceBreadcrumb';
 import FavouriteButton from '../common/buttons/FavouriteButton';
-import { getResourceConfig } from '../DashboardConfigUtils';
 
 function ResourceHeader(props) {
-
   const [isPinned, setIsPinned] = useState(false);
 
   /** Delete the Resource */
@@ -38,8 +36,6 @@ function ResourceHeader(props) {
   const editDescription = async (value) => {
     props.resource.metadata.annotations = {...props.resource.metadata.annotations, description: value};
 
-    console.log(props.updateFunc);
-
     await props.updateFunc(
       props.resource.metadata.name,
       props.resource.metadata.namespace,
@@ -49,9 +45,9 @@ function ResourceHeader(props) {
 
   return (
     <Alert.ErrorBoundary>
-      <div style={{width: '100%'}}>
+      <div style={{width: '100%', backgroundColor: '#f0f2f5', paddingBottom: 16, paddingTop: 20}}>
         <Row align={'bottom'}>
-          <Col span={12}>
+          <Col span={20}>
             <Row align={'bottom'}>
               <Col>
                 {!props.onCustomView ? <ResourceBreadcrumb /> : null}
@@ -83,7 +79,7 @@ function ResourceHeader(props) {
               </Col>
             </Row>
           </Col>
-          <Col span={12}>
+          <Col span={4}>
             {
               !props.onCustomView ? (
                 <div style={{float: "right"}}>

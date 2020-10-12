@@ -1,7 +1,7 @@
 import { Rate } from 'antd';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { createNewConfig, getResourceConfig, updateResourceConfig } from '../../DashboardConfigUtils';
+import { createNewConfig, getResourceConfig, updateResourceConfig } from '../DashboardConfigUtils';
 
 export default function FavouriteButton(props){
   let params = useParams();

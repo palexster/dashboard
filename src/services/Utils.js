@@ -32,7 +32,6 @@ export default function Utils() {
       return;
     }
 
-    //console.log(result);
     return result;
   }
 
@@ -95,7 +94,6 @@ export default function Utils() {
     try{
       if(typeof object === 'object' && object !== null){
         Object.keys(object).forEach(key => {
-          console.log(key);
           let k = (path ? path + ' > ' : '') + key;
           if(key === searchedKey){
             objectSet = {

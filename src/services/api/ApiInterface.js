@@ -550,8 +550,6 @@ export default function ApiInterface(_user, props) {
   const getGenericResource = (partialPath) => {
     let path = window.APISERVER_URL + partialPath;
 
-    //console.log(path);
-
     return apiManager.current.fetchRaw(path, 'GET')
       .catch(error => handleError(error));
   }

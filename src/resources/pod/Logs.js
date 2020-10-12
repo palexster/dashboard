@@ -13,8 +13,6 @@ export default function Logs(){
     })
   }, [])
 
-  console.log(log);
-
   return(
     <div>
       <AceEditor

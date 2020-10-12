@@ -4,7 +4,7 @@ import { withRouter, useLocation, useHistory, useParams } from 'react-router-dom
 import { getColumnSearchProps } from '../../services/TableUtils';
 import ListHeader from './ListHeader';
 import { calculateAge } from '../../services/TimeUtils';
-import { createNewConfig, getResourceConfig, updateResourceConfig } from '../DashboardConfigUtils';
+import { createNewConfig, getResourceConfig, updateResourceConfig } from '../common/DashboardConfigUtils';
 import KubernetesSchemaAutocomplete from '../common/KubernetesSchemaAutocomplete';
 import { renderResourceList } from './ResourceListRenderer';
 import { columnContentFunction } from './columnContentFunction';
@@ -97,7 +97,7 @@ function ResourceList(props) {
       resourceConfig.render.columns.forEach(column => {
         columns.push({
           dataIndex: column.columnName,
-          key: column.parameter,
+          key: column.columnContent,
           width: '10em',
           ellipsis: true,
           fixed: (index === 0 ? 'left' : false),
@@ -105,20 +105,20 @@ function ResourceList(props) {
             renderResourceList(text, record, dataIndex, resourceList)
           ),
           title: (
-            editColumn === column.parameter ? (
-              <div style={{marginLeft: '2em'}} onClick={() => setEditColumn(column.parameter)}>
+            editColumn === column.columnContent ? (
+              <div style={{marginLeft: '2em'}} onClick={() => setEditColumn(column.columnContent)}>
                 <Input placeholder={'Remove ' + column.columnName} size={'small'} autoFocus
                        defaultValue={column.columnName}
                        onBlur={(e) => {
-                         updateDashConfig(column.parameter, e.target.value)
+                         updateDashConfig(column.columnContent, e.target.value)
                        }}
                        onPressEnter={(e) => {
-                         updateDashConfig(column.parameter, e.target.value)
+                         updateDashConfig(column.columnContent, e.target.value)
                        }}
                 />
               </div>
             ) : (
-              <div style={{marginLeft: '2em'}} onClick={() => setEditColumn(column.parameter)}>
+              <div style={{marginLeft: '2em'}} onClick={() => setEditColumn(column.columnContent)}>
                 {column.columnName}
               </div>
             )
@@ -180,7 +180,7 @@ function ResourceList(props) {
 
       if(!_.isEmpty(resourceConfig) && resourceConfig.render && resourceConfig.render.columns) {
         resourceConfig.render.columns.forEach(column => {
-          object[column.columnName] = columnContentFunction(resource, column.parameter);
+          object[column.columnName] = columnContentFunction(resource, column.columnContent);
         })
       } else {
         object['Name'] = resource.metadata.name;
@@ -232,7 +232,7 @@ function ResourceList(props) {
       /** If there is a column render for this parameter, update it */
       let index = tempResourceConfig.render.columns.indexOf(
         tempResourceConfig.render.columns.find(column =>
-          column.parameter === value
+          column.columnContent === value
         )
       );
 
@@ -243,12 +243,12 @@ function ResourceList(props) {
         else
           tempResourceConfig.render.columns[index] = {
             columnName: name,
-            parameter: value
+            columnContent: value
           }
       } else
         tempResourceConfig.render.columns.push({
           columnName: name,
-          parameter: value
+          columnContent: value
         })
     } else {
       tempResourceConfig = createNewConfig(params, {kind: kind});
@@ -256,7 +256,7 @@ function ResourceList(props) {
       /** The resource doesn't have a config, create one */
       tempResourceConfig.render.columns.push({
         columnName: name,
-        parameter: value
+        columnContent: value
       })
     }
 

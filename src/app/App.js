@@ -225,20 +225,14 @@ function App(props) {
              }/>,
       <Route key={'ResourceNamespaced'}
              exact path={'/apis/:group/:version/namespaces/:namespace/:resource/:resourceName'}
-             render={(props) => {
-               if (props.match.params.resource === 'deployments')
-                 return <Deploy {...props} />
-               else
-                 return < ResourceGeneral {...props} />
-             }}/>,
+             render={(props) =>
+               < ResourceGeneral {...props} />
+             }/>,
       <Route key={'ResourceNamespacedAPIV1'}
              exact path={'/api/:version/namespaces/:namespace/:resource/:resourceName'}
-             render={(props) => {
-               if (props.match.params.resource === 'pods')
-                 return <Pod {...props} />
-               else
-                 return < ResourceGeneral {...props} />
-             }}/>,
+             render={(props) =>
+               < ResourceGeneral {...props} />
+             }/>,
       <Route key={'settings'}
              exact path="/settings"
              render={(props) =>
@@ -275,7 +269,7 @@ function App(props) {
             {routes}
           </Switch>
         </Layout.Content>
-        <AppFooter />
+        {/*<AppFooter />*/}
       </Layout>
     </Layout>
   );

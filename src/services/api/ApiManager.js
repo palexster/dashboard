@@ -5,7 +5,7 @@ import { ApiextensionsV1beta1Api, Config, CoreV1Api, AppsV1Api, ApisApi, CustomO
  */
 
 export default function ApiManager(user) {
-  window.APISERVER_URL = 'https://127.0.0.1:40253';
+  window.APISERVER_URL = 'https://127.0.0.1:41749';
   const config = new Config(window.APISERVER_URL, user.id_token, user.token_type);
   const apiExt = config.makeApiClient(ApiextensionsV1beta1Api);
   const apiCRD = config.makeApiClient(CustomObjectsApi);

@@ -5,7 +5,7 @@ import { useParams } from 'react-router-dom';
 import FavouriteButton from '../common/buttons/FavouriteButton';
 import {PlusOutlined, MinusOutlined} from '@ant-design/icons';
 import IconButton from '../common/buttons/IconButton';
-import { createNewConfig, getResourceConfig, updateResourceConfig } from '../DashboardConfigUtils';
+import { createNewConfig, getResourceConfig, updateResourceConfig } from '../common/DashboardConfigUtils';
 
 export default function ListHeader(props){
   const [onAddColumn, setOnAddColumn] = useState(false);

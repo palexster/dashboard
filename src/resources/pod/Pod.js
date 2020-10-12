@@ -49,11 +49,9 @@ function Pod(props){
   }
 
   const notifyEvent = (type, object) => {
-    console.log(type);
     resourceNotifyEvent(setPod, type, object);
     if(type === 'DELETED'){
       setDeleted(true);
-      console.log(object)
     }
   }
 

@@ -1,4 +1,4 @@
-import { Alert, Card, Input } from 'antd';
+import { Button, Affix, Alert, Card, Input } from 'antd';
 import React, { useEffect, useRef, useState } from 'react';
 import ResourceHeader from './ResourceHeader';
 import LoadingIndicator from '../../common/LoadingIndicator';
@@ -7,33 +7,21 @@ import ResourceForm from './ResourceForm';
 import { resourceNotifyEvent } from './ResourceUtils';
 import { useHistory, useLocation, useParams } from 'react-router-dom';
 import './ResourceGeneral.css';
-import { CodeOutlined, InfoCircleOutlined, PlusOutlined } from '@ant-design/icons';
+import { CodeOutlined, InfoCircleOutlined, PlusOutlined, SettingOutlined } from '@ant-design/icons';
 import CustomTab from './CustomTab';
+import { createNewConfig, getResourceConfig, updateResourceConfig } from '../common/DashboardConfigUtils';
 
 function ResourceGeneral(props){
+  const [container, setContainer] = useState(null);
   const [loading, setLoading] = useState(true);
   const [resource, setResource] = useState([]);
+  const [resourceConfig, setResourceConfig] = useState({});
   const [deleted, setDeleted] = useState(false);
   const [currentTab, setCurrentTab] = useState('General');
-  const [tabList, setTabList] = useState([{
-      key: 'General',
-      tab: (
-        <span>
-          <InfoCircleOutlined />General
-        </span>
-      )
-    },
-      {
-        key: 'JSON',
-        tab: (
-          <span>
-          <CodeOutlined />JSON
-        </span>
-        )
-      }]
-  )
+  const [tabList, setTabList] = useState([])
   const [contentList, setContentList] = useState({});
   const [onEditTabName, setOnEditTabName] = useState('');
+  const [onEditTabContent, setOnEditTabContent] = useState('');
   let location = useLocation();
   let history = useHistory();
   let params = useParams();
@@ -41,9 +29,14 @@ function ResourceGeneral(props){
 
   useEffect(() => {
     loadResource();
+    getDashConfig();
+    window.api.DCArrayCallback.current.push(getDashConfig);
 
     /** When unmounting, eliminate every callback and watch */
     return () => {
+      window.api.DCArrayCallback.current = window.api.DCArrayCallback.current.filter(func => {
+        return func !== getDashConfig;
+      });
       if(props.onCustomView){
         //window.api.abortWatch(params.crdName.split('.')[0]);
       } else {
@@ -54,24 +47,10 @@ function ResourceGeneral(props){
 
   useEffect(() => {
     if(!loading){
-      setContentList({
-        General: (
-          <div>
-            <ResourceForm resource={JSON.parse(JSON.stringify(resource[0]))}
-                          updateFunc={updateResource} kind={resource[0].kind}
-            />
-          </div>
-        ),
-        JSON: (
-          <div style={{padding: 12}}>
-            <Editor value={JSON.stringify(resource[0], null, 2)}
-                    onClick={submit}
-            />
-          </div>
-        )
-      });
+      manageTabList();
+      manageContentList();
     }
-  }, [loading])
+  }, [loading, resourceConfig])
 
   useEffect(() => {
     if(onEditTabName !== ''){
@@ -83,8 +62,11 @@ function ResourceGeneral(props){
           <span onDoubleClick={() => setOnEditTabName(key)}>
           <PlusOutlined/>
             <Input bordered={false} defaultValue={key} placeholder={key}
-                   size={'small'} onPressEnter={(e) => editTabName(e.target.value, index, key)}
-                   onBlur={(e) => editTabName(e.target.value, index, key)}
+                   size={'small'}
+                   onPressEnter={(e) =>
+                     updateConfigTabs(e.target.value, key)}
+                   onBlur={(e) =>
+                     updateConfigTabs(e.target.value, key)}
             />
         </span>
         )
@@ -93,20 +75,130 @@ function ResourceGeneral(props){
     }
   }, [onEditTabName])
 
-  const editTabName = (value, index, key) => {
-    tabList[index].key = value;
-    tabList[index].tab = (
-      <span onDoubleClick={() => setOnEditTabName(value)}>
-        <PlusOutlined />{value}
-      </span>
-    )
-    setTabList([...tabList]);
-    contentList[value] = contentList[key];
-    delete contentList[key];
-    setContentList({...contentList});
-    setCurrentTab(value);
-    changeTabFlag.current = false;
+
+  const getDashConfig = () => {
+    if(window.api.dashConfigs.current){
+      setResourceConfig(() => {
+        return getResourceConfig(params);
+      });
+    }
+  }
+
+  const manageTabList = () => {
+    let items = [
+        {
+        key: 'General',
+        tab: (
+          <span>
+            <InfoCircleOutlined />General
+          </span>
+        )
+      },
+      {
+        key: 'JSON',
+        tab: (
+          <span>
+            <CodeOutlined />JSON
+          </span>
+        )
+      }
+    ]
+
+    if(resourceConfig.render && resourceConfig.render.tabs){
+      resourceConfig.render.tabs.forEach(tab => {
+        items.push({
+          key: tab.tabName,
+          tab: (
+            <span onDoubleClick={() => setOnEditTabName(tab.tabName)}>
+              <PlusOutlined />{tab.tabName}
+            </span>
+          )
+        })
+      })
+    }
+
+    setTabList([...items]);
+  }
+
+  const manageContentList = () => {
+    let items = {
+      General: (
+        <div>
+          <ResourceForm resource={JSON.parse(JSON.stringify(resource[0]))}
+                        updateFunc={updateResource} kind={resource[0].kind}
+          />
+        </div>
+      ),
+      JSON: (
+        <div style={{padding: 12}}>
+          <Editor value={JSON.stringify(resource[0], null, 2)}
+                  onClick={submit}
+          />
+        </div>
+      )
+    }
+
+    if(resourceConfig.render && resourceConfig.render.tabs){
+      resourceConfig.render.tabs.forEach(tab => {
+        items[tab.tabName] = (
+          <CustomTab content={tab.tabContent} resource={resource[0]} tabName={tab.tabName}/>
+        )
+      })
+    }
+
+    setContentList({...items});
+  }
+
+  const updateConfigTabs = (name, prevValue) => {
     setOnEditTabName('');
+
+    /** If nothing has changed, exit from the editing mode */
+    if(name === prevValue){
+      manageTabList();
+      return;
+    }
+
+    let tempResourceConfig = resourceConfig;
+
+    if(!_.isEmpty(tempResourceConfig)){
+
+      if(!tempResourceConfig.render) tempResourceConfig.render = {};
+      if(!tempResourceConfig.render.tabs) tempResourceConfig.render.tabs = [];
+
+      /** If there is a tab render for this parameter, update it */
+      let index = tempResourceConfig.render.tabs.indexOf(
+        tempResourceConfig.render.tabs.find(tab =>
+          tab.tabName === prevValue
+        )
+      );
+
+      if(index !== -1){
+        /** Delete tab if no name */
+        if(name === '')
+          delete tempResourceConfig.render.tabs[index];
+        else
+          tempResourceConfig.render.tabs[index].tabName = name;
+      } else
+        tempResourceConfig.render.tabs.push({
+          tabName: name,
+          tabContent: []
+        })
+    } else {
+      tempResourceConfig = createNewConfig(params, {kind: resource.kind});
+
+      /** The resource doesn't have a config, create one */
+      tempResourceConfig.render.tabs.push({
+        tabName: name,
+        tabContent: []
+      })
+    }
+
+    updateResourceConfig(tempResourceConfig, params);
+
+    if(name !== ''){
+      setCurrentTab(name);
+      changeTabFlag.current = false;
+    }
   }
 
   const loadResource = () => {
@@ -170,18 +262,22 @@ function ResourceGeneral(props){
       return {
         ...prev,
         [key]: (
-          <CustomTab />
+          <CustomTab content={[]} resource={resource[0]} tabName={key}/>
         )
       }
     })
-    setCurrentTab('NewTab');
+    setCurrentTab(key);
+    updateConfigTabs(key);
   }
 
   const removeTab = (targetKey) => {
     setTabList(prev => {
       return prev.filter(tab => tab.key !== targetKey);
     });
-    setCurrentTab('General');
+    console.log(currentTab, targetKey)
+    if(currentTab === targetKey)
+      setCurrentTab('General');
+    updateConfigTabs('', targetKey);
   }
 
   const onEditTab = (targetKey, action) => {
@@ -193,13 +289,23 @@ function ResourceGeneral(props){
   }
 
   return(
-    <Alert.ErrorBoundary>
+    <div>
+      {/*<div ref={setContainer} style={{height: '80vh', overflow: 'auto'}}>
+        <div style={{paddingTop: 160, height: '200vh', backgroundColor: 'red'}}>
+          <Affix target={() => container}>
+            <Button type="primary">Fixed at the top of container</Button>
+          </Affix>
+        </div>
+      </div>*/}
+      <Alert.ErrorBoundary>
       {loading ? <LoadingIndicator /> : (
         !deleted ? (
-          <div aria-label={'crd'} key={resource[0].metadata.name}>
+          <div aria-label={'crd'} key={resource[0].metadata.name} ref={setContainer}
+               style={{height: '92vh', overflow: 'auto', marginLeft: -20, marginRight: -20, marginTop: -20}}
+          >
             {!props.onCustomView ? (
-              <div>
-                <div>
+              <div style={{marginLeft: 20, marginRight: 20}}>
+                <Affix target={() => container}>
                   <ResourceHeader
                     onCustomView={props.onCustomView}
                     resourceRedirect={'resources'}
@@ -209,8 +315,8 @@ function ResourceGeneral(props){
                     deleteFunc={deleteResource}
                     updateFunc={updateResource}
                   />
-                </div>
-                <div style={{marginTop: 16}}>
+                </Affix>
+                <div>
                   <Card bodyStyle={{paddingTop: 0, paddingLeft: 0, paddingRight: 0, paddingBottom: 0}}
                         headStyle={{marginLeft: -12, marginRight: -12}}
                         tabList={tabList}
@@ -221,8 +327,13 @@ function ResourceGeneral(props){
                           },
                           type: 'editable-card',
                           size: 'small',
+                          animated: true
                         }}
-                        //tabBarExtraContent={<Input size={'small'} onPressEnter={searchProperty} placeholder={'Search'} allowClear />}
+                        tabBarExtraContent={(currentTab !== 'General' && currentTab !== 'JSON') ?
+                          <Button icon={<SettingOutlined />} size={'large'}
+                                  onClick={() => setOnEditTabContent(currentTab)}
+                          />
+                           : null}
                         size={'small'}
                         type={'inner'}
                         activeTabKey={currentTab}
@@ -249,6 +360,7 @@ function ResourceGeneral(props){
         )
       )}
     </Alert.ErrorBoundary>
+    </div>
   )
 }
 

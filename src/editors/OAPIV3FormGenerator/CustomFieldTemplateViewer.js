@@ -17,9 +17,9 @@ function CustomFieldTemplateViewer(props){
             <div>
               {!props.disabled ? (
                 <>
-                  {!required ? <Badge status="processing"/> : (
+                  {!required ? <Badge color={'blue'}/> : (
                     <Tooltip placement="top" title={'Field required'}>
-                      <Badge status="processing" color={'red'}/>
+                      <Badge color={'red'}/>
                     </Tooltip>
                   )}
                 </>
@@ -40,6 +40,7 @@ function CustomFieldTemplateViewer(props){
             {props.disabled ? (
               <Tooltip title={'Edit field'} placement={'top'}>
                 <Button icon={<EditOutlined/>}
+                        size={'small'}
                         onClick={() => {
                           props.onDisableChange()
                         }}/>
@@ -49,7 +50,9 @@ function CustomFieldTemplateViewer(props){
                           onConfirm={() => {props.onDisableChange()}}
                           okText="Yes" cancelText="No"
               >
-                <Button icon={<CloseOutlined />} htmlType={'submit'}/>
+                <Button icon={<CloseOutlined />} htmlType={'submit'}
+                        size={'small'}
+                />
               </Popconfirm>
             )
             }

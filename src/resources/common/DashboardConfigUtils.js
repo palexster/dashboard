@@ -7,11 +7,11 @@ export const createNewConfig = (params, props) => {
       columns: [
         {
           columnName: 'Name',
-          parameter: 'param.metadata.name%//'
+          columnContent: 'param.metadata.name%//'
         },
         {
           columnName: 'Namespace',
-          parameter: 'param.metadata.namespace%//'
+          columnContent: 'param.metadata.namespace%//'
         }
       ]
     }

@@ -4,7 +4,7 @@ export function calculateAge(timestamp){
   let diffTime = Math.abs(date - date2)/(1000*60*60*24*30);
   if(Math.floor(diffTime) === 0){
     diffTime = Math.abs(date - date2)/(1000*60*60*24) - 1;
-    if(Math.floor(diffTime) === 0){
+    if(Math.floor(diffTime) < 1){
       diffTime = Math.abs(date - date2)/(1000*60*60);
       if(Math.floor(diffTime) === 0){
         diffTime = Math.abs(date - date2)/(1000*60);
