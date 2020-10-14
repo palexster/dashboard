@@ -14,6 +14,7 @@ const Form = withTheme(AntDTheme);
 function FormViewer(props) {
 
   const [showButton, setShowButton] = useState(false);
+  const [updateCount, setUpdateCount] = useState(0);
 
   const util = Utils();
 
@@ -71,6 +72,9 @@ function FormViewer(props) {
       )
     }
 
+    setShowButton(false);
+    setUpdateCount(prev => ++prev);
+
     promise
       .catch((error) => {
         console.log(error);
@@ -79,7 +83,7 @@ function FormViewer(props) {
   }
 
   return(
-    <div key={props.show}>
+    <div key={props.show + '#' + updateCount} >
       <Form
         uiSchema = {{ "ui:disabled": true }}
         schema={schema}

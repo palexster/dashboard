@@ -90,9 +90,31 @@ export default function Utils() {
     } catch {}
   }
 
+  let objectSet = {};
+
+  const getSelectedProperties = (object, searchedKey, path) => {
+    try{
+      if(typeof object === 'object' && object !== null){
+        Object.keys(object).forEach(key => {
+          let k = (path ? path + ' > ' : '') + key;
+          if(key === searchedKey){
+            objectSet = {
+              ...objectSet,
+              [k]: object[key]
+            };
+          }
+          getSelectedProperties(object[key], searchedKey, (path ? path + ' > ' : '') + key);
+        })
+      }
+    } catch {}
+
+    return objectSet;
+  }
+
   return{
     setRealProperties,
     OAPIV3toJSONSchema,
-    index
+    index,
+    getSelectedProperties,
   }
 }
